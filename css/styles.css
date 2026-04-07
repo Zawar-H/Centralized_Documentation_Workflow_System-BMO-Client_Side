@@ -68,7 +68,7 @@
     padding-bottom: 1rem;
     margin-bottom: 0.5rem;
 }
-.logo-bar img { height: 36px; width: auto; display: block; }
+.logo-bar img { height: 60px; width: auto; display: block; }
 
 /* ── Logo strip (dark sidebar — edit page) ───────────────── */
 .logo-strip {

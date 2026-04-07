@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMO Documentation Review System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-900">
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOAST NOTIFICATION (global, always on top)
+════════════════════════════════════════════════════════════ -->
+<div id="toast-notification" class="fixed top-0 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-3 rounded-full shadow-2xl z-[999] flex items-center gap-3 border border-slate-700">
+    <div class="w-2 h-2 rounded-full animate-pulse toast-dot"></div>
+    <span id="toast-text" class="text-sm font-bold tracking-wide">Saved</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VIEW 1 — DASHBOARD
+════════════════════════════════════════════════════════════ -->
+<div id="dashboard-page" class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white border-r border-gray-200 p-6 flex flex-col gap-5 shadow-sm overflow-y-auto">
+        <div class="logo-bar">
+            <img src="logo.svg" alt="Client Logo">
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Current Role</label>
+            <select class="role-selector w-full bg-slate-800 text-white border-none rounded-lg p-2.5 text-sm font-bold outline-none cursor-pointer" onchange="switchRole(this)">
+                <option value="PROJECT_TEAM">Project Team</option>
+                <option value="PMO_REVIEWER">PMO Reviewer</option>
+                <option value="DELIVERY_REVIEWER">Delivery Team Reviewer</option>
+                <option value="PMO_LEADERSHIP">PMO Leadership</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Search Project</label>
+            <input type="text" id="search-filter" placeholder="Type project name..." class="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 outline-none transition-all" style="--tw-ring-color:rgba(0,121,193,0.3)">
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Status</label>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 text-sm cursor-pointer hover:brand-text" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Active" class="filter-check status-check w-4 h-4 rounded" style="accent-color:#0079c1"> Active
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Ready for Review" class="filter-check status-check w-4 h-4 rounded" style="accent-color:#0079c1"> Ready for Review
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Review In Progress" class="filter-check status-check w-4 h-4 rounded" style="accent-color:#0079c1"> Review In Progress
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Remediation" class="filter-check status-check w-4 h-4 rounded" style="accent-color:#0079c1"> Remediation
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Completed" class="filter-check status-check w-4 h-4 rounded" style="accent-color:#0079c1"> Completed
+                </label>
+            </div>
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Methodology</label>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 text-sm cursor-pointer" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Agile" class="filter-check method-check w-4 h-4 rounded" style="accent-color:#0079c1"> Agile
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer" onmouseover="this.style.color='#0079c1'" onmouseout="this.style.color=''">
+                    <input type="checkbox" value="Waterfall" class="filter-check method-check w-4 h-4 rounded" style="accent-color:#0079c1"> Waterfall
+                </label>
+            </div>
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Project Manager</label>
+            <select id="pm-filter" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none">
+                <option value="All">All Managers</option>
+                <option value="Alex Chen">Alex Chen</option>
+                <option value="Jane Doe">Jane Doe</option>
+            </select>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="flex justify-between items-center px-8 py-5 bg-white border-b border-gray-200 shadow-sm">
+            <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">Project Overview</h1>
+            <div id="pm-actions" class="flex items-center gap-3">
+                <button onclick="openNewProjectModal()" class="btn-brand px-5 py-2 rounded-lg font-bold shadow-md text-sm">+ New Project</button>
+                <button onclick="duplicateSelected()" title="Duplicate selected" class="px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 text-xs font-bold text-gray-600">Duplicate</button>
+                <button onclick="deleteSelected()" title="Delete selected" class="px-4 py-2 bg-white text-red-500 border border-gray-200 rounded-lg shadow-sm hover:bg-red-50 text-xs font-bold">Delete</button>
+            </div>
+        </header>
+        <div class="p-6 overflow-auto">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200 text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                            <th class="p-4 w-10 text-center sel-col">Sel.</th>
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Project Name</th>
+                            <th class="p-4">Method</th>
+                            <th class="p-4">PM</th>
+                            <th class="p-4 hide-sm">Round 1</th>
+                            <th class="p-4 hide-sm">Round 2</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Progress</th>
+                            <th class="p-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="project-table-body" class="divide-y divide-gray-100 text-[13px]"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VIEW 2 — EDIT PAGE (artifact editor)
+════════════════════════════════════════════════════════════ -->
+<div id="edit-page" class="flex h-screen hidden">
+
+    <!-- Dark sidebar -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800">
+        <div class="logo-strip">
+            <img src="logo.svg" alt="Client Logo">
+        </div>
+        <div class="p-5 border-b border-slate-800">
+            <h2 id="artifact-title" class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-1">Artifacts</h2>
+            <div class="flex items-center gap-2 mt-2">
+                <div class="flex-1 bg-slate-700 rounded-full h-1.5">
+                    <div id="completion-progress-bar" class="progress-bar-fill" style="width:0%"></div>
+                </div>
+                <span id="completion-progress-text" class="text-[10px] text-slate-400 whitespace-nowrap">0 / 0</span>
+            </div>
+        </div>
+        <nav id="sidebar-artifacts" class="flex-1 p-3 space-y-0.5 text-sm overflow-y-auto"></nav>
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="showPage('dashboard-page')" class="w-full text-left px-3 py-2 text-sm font-bold hover:text-white transition-colors" style="color:#7ecbf0">← Back to Dashboard</button>
+        </div>
+    </aside>
+
+    <!-- Main edit content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-gray-50">
+        <!-- Edit header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center shadow-sm z-10">
+            <div>
+                <span id="edit-method-badge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase mr-2 tracking-tighter" style="background:#e6f3fb;color:#0079c1">Method</span>
+                <h1 class="text-2xl font-extrabold text-gray-900 leading-snug mt-1">
+                    <span id="edit-project-name" class="text-slate-700">Project</span>:
+                    <span id="current-artifact-name" class="brand-text">Artifact</span>
+                </h1>
+            </div>
+            <div id="edit-header-actions" class="flex gap-3 items-center flex-wrap justify-end"></div>
+        </header>
+
+        <!-- Scrollable edit body -->
+        <section class="flex-1 overflow-y-auto p-8 space-y-6">
+
+            <!-- Guided form -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2">Required Documentation Fields</h3>
+                <div id="guided-form-fields"></div>
+            </div>
+
+            <!-- File upload -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <h3 class="text-sm font-bold text-gray-800 mb-4 border-b pb-2">Supporting Evidence Files</h3>
+                <div id="upload-section"></div>
+            </div>
+
+            <!-- History + Comments -->
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col" style="height:280px">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2">Artifact History</h3>
+                    <div id="history-log" class="flex-1 overflow-y-auto space-y-2 text-[11px] pr-1"></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col" style="height:280px">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 border-b pb-2">Comments &amp; Reviews</h3>
+                    <div id="comments-container" class="flex-1 overflow-y-auto space-y-2 pr-1 mb-3"></div>
+                    <div class="flex gap-2">
+                        <input id="comment-input" type="text" placeholder="Add a comment..." class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none guided-input">
+                        <button onclick="handleSendComment()" class="btn-brand px-4 py-2 rounded-lg text-xs font-bold">Send</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VIEW 3 — PMO LEADERSHIP (summary table)
+════════════════════════════════════════════════════════════ -->
+<div id="leadership-page" class="flex h-screen hidden">
+
+    <aside class="w-72 bg-white border-r border-gray-200 p-6 flex flex-col gap-5 shadow-sm">
+        <div class="logo-bar">
+            <img src="logo.svg" alt="Client Logo">
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Current Role</label>
+            <select class="role-selector w-full bg-slate-800 text-white border-none rounded-lg p-2.5 text-sm font-bold outline-none cursor-pointer" onchange="switchRole(this)">
+                <option value="PROJECT_TEAM">Project Team</option>
+                <option value="PMO_REVIEWER">PMO Reviewer</option>
+                <option value="DELIVERY_REVIEWER">Delivery Team Reviewer</option>
+                <option value="PMO_LEADERSHIP">PMO Leadership</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-widest">Search</label>
+            <input type="text" id="leadership-search" placeholder="Type project name..." class="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none">
+        </div>
+        <div class="mt-auto p-4 bg-blue-50 rounded-xl border" style="border-color:#cce5f5">
+            <p class="text-xs font-bold mb-1" style="color:#0079c1">Read-Only View</p>
+            <p class="text-[11px] text-gray-500">You are viewing consolidated project data. No edits can be made from this view.</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="flex justify-between items-center px-8 py-5 bg-white border-b border-gray-200 shadow-sm">
+            <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">PMO Leadership Overview</h1>
+            <span class="text-xs font-bold px-3 py-1.5 rounded-full" style="background:#e6f3fb;color:#0079c1">Read Only</span>
+        </header>
+        <div class="p-6 overflow-auto">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200 text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                            <th class="p-4">Project</th>
+                            <th class="p-4">Method</th>
+                            <th class="p-4">PM</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Completion</th>
+                            <th class="p-4">Round 1 Ratings</th>
+                            <th class="p-4">Round 2 Ratings</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leadership-table-body" class="divide-y divide-gray-100 text-[13px]"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VIEW 4 — LEADERSHIP DETAIL (read-only artifact viewer)
+════════════════════════════════════════════════════════════ -->
+<div id="leadership-detail-page" class="flex h-screen hidden">
+
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800">
+        <div class="logo-strip">
+            <img src="logo.svg" alt="Client Logo">
+        </div>
+        <div class="p-5 border-b border-slate-800">
+            <h2 id="detail-artifact-title" class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Artifacts</h2>
+        </div>
+        <nav id="detail-sidebar-artifacts" class="flex-1 p-3 space-y-0.5 text-sm overflow-y-auto"></nav>
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="showPage('leadership-page'); renderLeadershipPage();" class="w-full text-left px-3 py-2 text-sm font-bold hover:text-white transition-colors" style="color:#7ecbf0">← Back to Overview</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden bg-gray-50">
+        <header class="bg-white border-b border-gray-200 px-8 py-5 shadow-sm">
+            <span id="detail-method-badge" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase mr-2 tracking-tighter" style="background:#e6f3fb;color:#0079c1">Method</span>
+            <h1 class="text-2xl font-extrabold text-gray-900 leading-snug mt-1">
+                <span id="detail-project-name" class="text-slate-700">Project</span>:
+                <span id="detail-artifact-name" class="brand-text">Artifact</span>
+            </h1>
+        </header>
+        <section class="flex-1 overflow-y-auto p-8 space-y-6">
+            <div id="detail-form-content"></div>
+            <div id="detail-reviews-section"></div>
+        </section>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL — NEW PROJECT
+════════════════════════════════════════════════════════════ -->
+<div id="new-project-modal" class="fixed inset-0 modal-bg flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 space-y-4">
+        <h3 class="text-xl font-bold border-b pb-4">Create New Project</h3>
+        <input type="text" id="new-id" placeholder="Project ID (leave blank to auto-generate)" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-input">
+        <input type="text" id="new-name" placeholder="Project Name *" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-input">
+        <select id="new-pm" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none">
+            <option value="Alex Chen">Alex Chen</option>
+            <option value="Jane Doe">Jane Doe</option>
+        </select>
+        <select id="new-method" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none">
+            <option value="Agile">Agile</option>
+            <option value="Waterfall">Waterfall</option>
+        </select>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Round 1 Start</label>
+                <input type="date" id="new-r1-start" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-input">
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Round 1 End</label>
+                <input type="date" id="new-r1-end" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-input">
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Round 2 Start</label>
+                <input type="date" id="new-r2-start" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-input">
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Round 2 End</label>
+                <input type="date" id="new-r2-end" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-input">
+            </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button onclick="closeNewProjectModal()" class="flex-1 bg-gray-100 py-3 rounded-xl font-bold hover:bg-gray-200">Cancel</button>
+            <button onclick="createNewProject()" class="btn-brand flex-1 py-3 rounded-xl font-bold shadow-md">Create Project</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL — REVIEW ARTIFACT
+════════════════════════════════════════════════════════════ -->
+<div id="review-modal" class="fixed inset-0 modal-bg flex items-center justify-center hidden z-[60]">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 space-y-4">
+        <h3 class="text-xl font-bold border-b pb-4">Review Artifact</h3>
+        <p class="text-sm text-gray-500">Reviewing: <span id="review-artifact-label" class="font-bold text-gray-800"></span></p>
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-widest">Rating</label>
+            <select id="review-rating" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none">
+                <option value="Satisfactory">Satisfactory</option>
+                <option value="Needs Improvement">Needs Improvement</option>
+                <option value="Unsatisfactory">Unsatisfactory</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-widest">Feedback / Comments</label>
+            <textarea id="review-comment-popup" rows="4" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm outline-none guided-textarea" placeholder="Provide specific, actionable feedback..."></textarea>
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button onclick="closeReviewModal()" class="flex-1 bg-gray-100 py-3 rounded-xl font-bold hover:bg-gray-200">Cancel</button>
+            <button onclick="submitArtifactReview()" class="btn-brand flex-1 py-3 rounded-xl font-bold shadow-md">Submit Review</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS — loaded in dependency order
+════════════════════════════════════════════════════════════ -->
+<script src="js/state.js"></script>
+<script src="js/artifacts.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/roles.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/review.js"></script>
+<script src="js/leadership.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

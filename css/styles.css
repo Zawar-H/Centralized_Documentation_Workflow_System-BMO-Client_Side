@@ -1,0 +1,116 @@
+/* ============================================================
+   styles.css — Brand variables + custom styles.
+   Tailwind CDN handles utility classes; this file handles
+   brand overrides, custom components, and animations.
+   ============================================================ */
+
+:root {
+    --brand:       #0079c1;
+    --brand-dark:  #005f99;
+    --brand-light: #e6f3fb;
+    --brand-mid:   #cce5f5;
+}
+
+/* ── Brand utilities ─────────────────────────────────────── */
+.btn-brand             { background-color: var(--brand) !important; color: #fff !important; }
+.btn-brand:hover       { background-color: var(--brand-dark) !important; }
+.brand-text            { color: var(--brand) !important; }
+.brand-bg-light        { background-color: var(--brand-light) !important; }
+.brand-border          { border-color: var(--brand) !important; }
+
+/* ── Layout helpers ──────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── Toast notification ──────────────────────────────────── */
+#toast-notification {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateY(-100px);
+    opacity: 0;
+}
+#toast-notification.show {
+    transform: translateY(24px);
+    opacity: 1;
+}
+.toast-dot { background-color: var(--brand) !important; }
+
+/* ── Locked overlay (PM locked during review) ────────────── */
+.locked-overlay {
+    pointer-events: none;
+    opacity: 0.55;
+    filter: grayscale(40%);
+}
+
+/* ── Artifact sidebar active link ────────────────────────── */
+.artifact-link.active {
+    background-color: #1e293b;
+    color: #7ecbf0;
+    border-left: 4px solid var(--brand);
+    font-weight: 700;
+}
+
+/* ── Completion dots ─────────────────────────────────────── */
+.dot-gray  { background-color: #9ca3af; }
+.dot-amber { background-color: #f59e0b; }
+.dot-green { background-color: #22c55e; }
+.dot-red   { background-color: #ef4444; }
+
+/* ── Progress bar ────────────────────────────────────────── */
+.progress-bar-fill {
+    background-color: var(--brand);
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+/* ── Logo bar (dashboard sidebar) ────────────────────────── */
+.logo-bar {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+}
+.logo-bar img { height: 36px; width: auto; display: block; }
+
+/* ── Logo strip (dark sidebar — edit page) ───────────────── */
+.logo-strip {
+    background: #fff;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #1e293b;
+}
+.logo-strip img { height: 26px; width: auto; display: block; }
+
+/* ── Custom scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ── Modal backdrop ──────────────────────────────────────── */
+.modal-bg {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+}
+
+/* ── Guided form field focus ring ────────────────────────── */
+.guided-input:focus,
+.guided-textarea:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(0, 121, 193, 0.15);
+    background: #fff;
+}
+
+/* ── Review rating badge colors ──────────────────────────── */
+.rating-satisfactory    { background: #dcfce7; color: #15803d; }
+.rating-needs-imp       { background: #fef9c3; color: #a16207; }
+.rating-unsatisfactory  { background: #fee2e2; color: #b91c1c; }
+
+/* ── Table row hover override (brand-tinted) ─────────────── */
+#project-table-body tr:hover td,
+#leadership-table-body tr:hover td {
+    background-color: var(--brand-light);
+}
+
+/* ── Responsive: keep layout usable on smaller screens ───── */
+@media (max-width: 900px) {
+    .hide-sm { display: none !important; }
+}

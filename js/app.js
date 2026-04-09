@@ -6,7 +6,7 @@
 // ── Page navigation ───────────────────────────────────────
 
 function showPage(pageId) {
-    ['dashboard-page', 'edit-page', 'leadership-page', 'leadership-detail-page'].forEach(function (id) {
+    ['login-page', 'dashboard-page', 'edit-page', 'leadership-page', 'leadership-detail-page'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
@@ -30,6 +30,29 @@ function showToast(text) {
 }
 
 // ── Role switching ────────────────────────────────────────
+
+function handleMockLogin(event) {
+    if (event) event.preventDefault();
+
+    AppState.currentRole = ROLES.PROJECT_TEAM;
+
+    document.querySelectorAll('.role-selector').forEach(function (s) {
+        s.value = AppState.currentRole;
+    });
+
+    var pmActions = document.getElementById('pm-actions');
+    if (pmActions) {
+        pmActions.classList.toggle('hidden', !canSeeProjectControls(AppState.currentRole));
+    }
+
+    document.querySelectorAll('.sel-col').forEach(function (el) {
+        el.classList.toggle('hidden', !canSeeProjectControls(AppState.currentRole));
+    });
+
+    showPage('dashboard-page');
+    renderTable();
+    showToast('Mock login successful');
+}
 
 function switchRole(selectEl) {
     var newRole = selectEl.value;
@@ -86,5 +109,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial render
     renderTable();
-    showPage('dashboard-page');
+    showPage('login-page');
 });

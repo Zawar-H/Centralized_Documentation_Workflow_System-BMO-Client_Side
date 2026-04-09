@@ -18,10 +18,72 @@
     <span id="toast-text" class="text-sm font-bold tracking-wide">Saved</span>
 </div>
 
+<div id="login-page" class="min-h-screen flex items-center justify-center px-6 py-12 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950">
+    <div class="w-full max-w-5xl grid lg:grid-cols-[1.2fr_0.8fr] bg-white/95 rounded-3xl shadow-2xl overflow-hidden border border-white/30">
+        <section class=" lg:flex flex-col justify-between p-10 text-white" style="background:linear-gradient(135deg,#0079c1 0%,#005f99 45%,#062c43 100%)">
+            <div>
+                <img src="logo.svg" alt="BMO Logo" class="h-10 w-auto bg-white rounded-lg px-3 py-2">
+                <p class="mt-8 text-xs font-bold uppercase tracking-[0.35em] text-blue-100">Documentation Governance</p>
+                <h1 class="mt-4 text-4xl font-black leading-tight">BMO PMO Documentation Review Portal</h1>
+                <p class="mt-5 text-sm leading-7 text-blue-50 max-w-xl">
+                    Centralize project artifacts, simulate role-based review workflows, and monitor delivery readiness across Agile and Waterfall engagements.
+                </p>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-[11px] font-semibold">
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+                    <p class="text-2xl font-black">17</p>
+                    <p class="mt-1 text-blue-100">Artifact types</p>
+                </div>
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+                    <p class="text-2xl font-black">4</p>
+                    <p class="mt-1 text-blue-100">User roles</p>
+                </div>
+                <div class="rounded-2xl bg-white/10 border border-white/10 p-4">
+                    <p class="text-2xl font-black">2</p>
+                    <p class="mt-1 text-blue-100">Review rounds</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="p-8 sm:p-10 lg:p-12 flex items-center">
+            <div class="w-full">
+                <div class=" hidden mb-8">
+                    <img src="logo.svg" alt="BMO Logo" class="h-10 w-auto">
+                    <h1 class="mt-5 text-3xl font-black text-slate-900">BMO PMO Documentation Review Portal</h1>
+                    <p class="mt-3 text-sm text-slate-500">Mock access for demos and walkthroughs. Any credentials will be accepted.</p>
+                </div>
+
+                <div class=" hidden lg:block mb-8">
+                    <p class="text-xs font-bold uppercase tracking-[0.35em] text-slate-400">Mock Login</p>
+                    <h2 class="mt-3 text-3xl font-black text-slate-900">Access The Review Workspace</h2>
+                    <p class="mt-3 text-sm text-slate-500">Enter any username and password to authenticate and continue to the project overview.</p>
+                </div>
+
+                <form onsubmit="handleMockLogin(event)" class="space-y-5">
+                    <div>
+                        <label for="login-username" class="block text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-2">Username</label>
+                        <input id="login-username" type="text" placeholder="Enter any username" class="guided-input w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none">
+                    </div>
+                    <div>
+                        <label for="login-password" class="block text-[11px] font-bold uppercase tracking-[0.25em] text-slate-400 mb-2">Password</label>
+                        <input id="login-password" type="password" placeholder="Enter any password" class="guided-input w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none">
+                    </div>
+                    <div class="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-slate-600">
+                        Demo mode is enabled. Authentication is mocked and no credentials are validated or stored.
+                    </div>
+                    <button type="submit" class="w-full rounded-2xl px-5 py-3.5 text-sm font-bold text-white shadow-lg transition-colors" style="background:#0079c1" onmouseover="this.style.background='#005f99'" onmouseout="this.style.background='#0079c1'">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════════
      VIEW 1 — DASHBOARD
 ════════════════════════════════════════════════════════════ -->
-<div id="dashboard-page" class="flex h-screen">
+<div id="dashboard-page" class="flex h-screen hidden">
 
     <!-- Sidebar -->
     <aside class="w-72 bg-white border-r border-gray-200 p-6 flex flex-col gap-5 shadow-sm overflow-y-auto">

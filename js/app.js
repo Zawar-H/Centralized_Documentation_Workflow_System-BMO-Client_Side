@@ -31,6 +31,15 @@ function showToast(text) {
 
 // ── Role switching ────────────────────────────────────────
 
+function openLoginNoticeModal() {
+    var modal = document.getElementById('login-notice-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeLoginNoticeModal() {
+    var modal = document.getElementById('login-notice-modal');
+    if (modal) modal.classList.add('hidden');
+}
 function handleMockLogin(event) {
     if (event) event.preventDefault();
 
@@ -51,6 +60,7 @@ function handleMockLogin(event) {
 
     showPage('dashboard-page');
     renderTable();
+    openLoginNoticeModal();
     showToast('Mock login successful');
 }
 

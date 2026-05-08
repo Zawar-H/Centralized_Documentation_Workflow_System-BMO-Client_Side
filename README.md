@@ -26,7 +26,7 @@ This demo application simulates a structured intake and review process for proje
 
 Open index.html directly in a browser, or serve the folder with any simple local web server.
 
-```bash
+```
 python -m http.server 8000
 ```
 
